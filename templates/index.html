@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Code Review & Rewrite Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" 
+     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script 
+     src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen p-8">
+
+    <h1 class="text-4xl font-bold mb-6">
+        🤖 AI Code Review & Rewrite Agent
+    </h1>
+
+    <div class="mb-4">
+        <select id="language" class="p-2 text-black rounded">
+            <option>Python</option>
+            <option>Java</option>
+            <option>C++</option>
+            <option>JavaScript</option>
+        </select>
+    </div>
+
+    <textarea id="code"
+        class="w-full h-60 p-4 text-black rounded"
+        placeholder="Paste your code here..."></textarea>
+
+    <button onclick="reviewCode()"
+        class="mt-4 bg-blue-600 px-6 py-2 rounded">
+        Review Code
+    </button>
+
+    <div id="result"
+        class="mt-8 p-6 bg-gray-800 rounded overflow-auto">
+    </div>
+
+<script>
+async function reviewCode() {
+
+    const code = document.getElementById("code").value;
+    const language = document.getElementById("language").value;
+
+    if (!code.trim()) {
+        alert("Please enter code!");
+        return;
+    }
+
+    document.getElementById("result").innerHTML =
+        "<p class='text-yellow-400'>Analyzing...</p>";
+
+    const response = await fetch("/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("result").innerHTML =
+        marked.parse(data.review);
+
+    document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el);
+    });
+}
+</script>
+
+</body>
+</html>
